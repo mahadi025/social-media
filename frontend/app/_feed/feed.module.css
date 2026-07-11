@@ -1,0 +1,162 @@
+.feedColumn {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.hint {
+  text-align: center;
+  color: #666;
+  padding: 24px 0;
+}
+
+.error {
+  color: #e64848;
+  margin-bottom: 12px;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.loadMoreBtn {
+  display: block;
+  margin: 8px auto 0;
+  padding: 10px 24px;
+  border-radius: 128px;
+  border: 1px solid #ebebeb;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.imagePreviewWrap {
+  position: relative;
+  display: inline-block;
+  margin: 12px 0;
+}
+
+.imagePreview {
+  max-width: 240px;
+  max-height: 240px;
+  border-radius: 6px;
+  display: block;
+}
+
+.removeImageBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.visibilityPicker select {
+  height: 100%;
+  border: none;
+  background: none;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+}
+
+.likersWrap {
+  position: relative;
+}
+
+.likesCountMuted {
+  color: #999;
+  font-size: 14px;
+}
+
+.likersPopover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 5;
+  min-width: 160px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 10px 14px;
+  margin-top: 4px;
+}
+
+.likersPopover p {
+  margin: 4px 0;
+  white-space: nowrap;
+}
+
+.replySection {
+  margin: 12px 0 0 40px;
+  padding-left: 20px;
+  border-left: 2px solid #f0f2f5;
+}
+
+.replyItem {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.replyAuthor {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.replyText {
+  font-size: 14px;
+  margin: 2px 0;
+}
+
+.replyMeta {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: #666;
+}
+
+.replyForm {
+  display: flex;
+  gap: 8px;
+}
+
+.replyInput {
+  flex: 1;
+  border: 1px solid #e8e8e8;
+  border-radius: 128px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.replySubmit {
+  border: none;
+  border-radius: 128px;
+  padding: 8px 18px;
+  background: #1890ff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+}

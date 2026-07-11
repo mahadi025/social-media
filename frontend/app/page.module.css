@@ -1,0 +1,38 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f2f5;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #fff;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.topBarGreeting {
+  font-weight: 500;
+  margin: 0;
+}
+
+.logoutButton {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 128px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  background: #000;
+  color: #fafafa;
+  transition: 0.2s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .logoutButton:hover {
+    background: #383838;
+  }
+}
