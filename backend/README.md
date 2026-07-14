@@ -9,7 +9,8 @@ Django REST Framework API powering the social media app: email/JWT authenticatio
 - **drf-spectacular** — OpenAPI schema + Swagger UI
 - **django-cors-headers** — CORS for the Next.js frontend
 - **Pillow** — image handling for post uploads
-- SQLite (default dev database)
+- **WhiteNoise** — static file serving in production
+- SQLite for local dev, Postgres in production (via `dj-database-url` + `psycopg`)
 
 ## Project structure
 
@@ -69,6 +70,7 @@ backend/
 | `JWT_REFRESH_TOKEN_LIFETIME_DAYS` | Refresh token lifetime, in days | `7` |
 | `STATIC_ROOT` | Directory static files are collected into | `static` |
 | `MEDIA_ROOT` | Directory uploaded media (post images) are stored in | `media` |
+| `DATABASE_URL` | Postgres connection string (production only — falls back to local SQLite when unset) | `postgresql://user:pass@host:5432/db` |
 
 ## Authentication
 
@@ -108,3 +110,22 @@ With the server running:
 ## Admin
 
 Django admin is available at `http://127.0.0.1:8000/admin/` (requires a superuser, see setup step 4).
+
+## Deployment
+
+Deployed on [Railway](https://railway.app) with a managed Postgres add-on and a persistent volume mounted at `MEDIA_ROOT` for uploaded post images. Railway builds with Nixpacks (Python version pinned in `.python-version`) and reads `railway.json` for the start command, pre-deploy `migrate`/`collectstatic` step, and restart policy.
+
+In addition to the local dev variables above, set these in the Railway service's Variables tab:
+
+| Variable | Value |
+|---|---|
+| `DEBUG` | `False` |
+| `ALLOWED_HOSTS` | `${{RAILWAY_PUBLIC_DOMAIN}}` |
+| `CSRF_TRUSTED_ORIGINS` | `https://${{RAILWAY_PUBLIC_DOMAIN}}` |
+| `CORS_ALLOWED_ORIGINS` | the deployed frontend's origin, e.g. `https://your-app.vercel.app` |
+| `DATABASE_URL` | reference to the Postgres service, e.g. `${{Postgres.DATABASE_URL}}` |
+| `MEDIA_ROOT` | `/data` (must match the attached volume's mount path) |
+| `STATIC_ROOT` | `staticfiles` |
+| `WEB_CONCURRENCY` | gunicorn worker count, e.g. `3` |
+
+Generate a fresh `SECRET_KEY` for production — never reuse the local dev value.

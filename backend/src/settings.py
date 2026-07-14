@@ -14,12 +14,18 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import dj_database_url
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
+
+
+def _split_env_list(name):
+    items = os.getenv(name, "").split(",")
+    return [item.lower().strip() for item in items if item.strip()]
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,15 +37,11 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") in ["True", "1", 1]
 
-ALLOWED_HOSTS = [host.lower().strip() for host in os.getenv("ALLOWED_HOSTS").split(",")]
+ALLOWED_HOSTS = _split_env_list("ALLOWED_HOSTS")
 
-CSRF_TRUSTED_ORIGINS = [
-    host.lower().strip() for host in os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
-]
+CSRF_TRUSTED_ORIGINS = _split_env_list("CSRF_TRUSTED_ORIGINS")
 
-CORS_ALLOWED_ORIGINS = [
-    host.lower().strip() for host in os.getenv("CORS_ALLOWED_ORIGINS").split(",")
-]
+CORS_ALLOWED_ORIGINS = _split_env_list("CORS_ALLOWED_ORIGINS")
 
 # Application definition
 
@@ -60,6 +62,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -93,10 +96,11 @@ WSGI_APPLICATION = "src.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 
@@ -139,6 +143,23 @@ STATIC_ROOT = str(BASE_DIR / os.getenv("STATIC_ROOT"))
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = str(BASE_DIR / os.getenv("MEDIA_ROOT"))
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+# Railway (and most PaaS) terminate TLS at the edge and forward plain HTTP
+# internally, so Django needs this to know a request was actually HTTPS.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
