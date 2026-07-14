@@ -43,6 +43,13 @@ CSRF_TRUSTED_ORIGINS = _split_env_list("CSRF_TRUSTED_ORIGINS")
 
 CORS_ALLOWED_ORIGINS = _split_env_list("CORS_ALLOWED_ORIGINS")
 
+# Render assigns the service's public hostname at deploy time, so it can't be
+# hardcoded into an env var the way a fixed domain could be.
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
+
 # Application definition
 
 INSTALLED_APPS = [

@@ -113,19 +113,16 @@ Django admin is available at `http://127.0.0.1:8000/admin/` (requires a superuse
 
 ## Deployment
 
-Deployed on [Railway](https://railway.app) with a managed Postgres add-on and a persistent volume mounted at `MEDIA_ROOT` for uploaded post images. Railway builds with Nixpacks (Python version pinned in `.python-version`) and reads `railway.json` for the start command, pre-deploy `migrate`/`collectstatic` step, and restart policy.
+Deployed on [Render](https://render.com)'s free tier, using its own free Postgres add-on. `render.yaml` (a Render Blueprint) defines the web service and database together — in the Render dashboard, use **New → Blueprint** and point it at this repo to provision both from that file.
 
-In addition to the local dev variables above, set these in the Railway service's Variables tab:
+Notes specific to the free tier:
+- No persistent disk, so `MEDIA_ROOT` stays a plain local directory (`media`) — uploaded post images do **not** survive a redeploy. Fine for a demo; would need S3-compatible storage (e.g. Cloudflare R2) for real use.
+- Render's free Postgres is deleted after 90 days of the *database's* lifetime and needs to be recreated (and re-migrated) at that point.
+- The free web service spins down after 15 minutes idle; the next request wakes it up but takes 30-60s.
+- `settings.py` reads `RENDER_EXTERNAL_HOSTNAME` (which Render sets automatically) and adds it to `ALLOWED_HOSTS`/`CSRF_TRUSTED_ORIGINS` itself — no need to copy the assigned domain into an env var by hand.
+
+`render.yaml` sets most required env vars (`SECRET_KEY` auto-generated, `DATABASE_URL` linked to the Blueprint's database, `DEBUG=False`, `MEDIA_ROOT`, `STATIC_ROOT`, JWT lifetimes). The one you still need to update by hand once the frontend is deployed:
 
 | Variable | Value |
 |---|---|
-| `DEBUG` | `False` |
-| `ALLOWED_HOSTS` | `${{RAILWAY_PUBLIC_DOMAIN}}` |
-| `CSRF_TRUSTED_ORIGINS` | `https://${{RAILWAY_PUBLIC_DOMAIN}}` |
 | `CORS_ALLOWED_ORIGINS` | the deployed frontend's origin, e.g. `https://your-app.vercel.app` |
-| `DATABASE_URL` | reference to the Postgres service, e.g. `${{Postgres.DATABASE_URL}}` |
-| `MEDIA_ROOT` | `/data` (must match the attached volume's mount path) |
-| `STATIC_ROOT` | `staticfiles` |
-| `WEB_CONCURRENCY` | gunicorn worker count, e.g. `3` |
-
-Generate a fresh `SECRET_KEY` for production — never reuse the local dev value.

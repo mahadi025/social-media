@@ -1,0 +1,33 @@
+databases:
+  - name: social-media-db
+    plan: free
+
+services:
+  - type: web
+    name: social-media-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: python manage.py migrate --noinput && gunicorn src.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: social-media-db
+          property: connectionString
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://placeholder.vercel.app
+      - key: MEDIA_ROOT
+        value: media
+      - key: STATIC_ROOT
+        value: staticfiles
+      - key: JWT_ACCESS_TOKEN_LIFETIME_MINUTES
+        value: "60"
+      - key: JWT_REFRESH_TOKEN_LIFETIME_DAYS
+        value: "7"
